@@ -7,6 +7,7 @@ import LoginPage from 'components/LoginPage';
 import RegisterPage from 'components/RegisterPage';
 import NavBar from 'components/NavBar';
 import Footer from 'components/Footer';
+import UploadProductPage from 'components/UploadProductPage';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             <Route exact path="/" component={Auth(LandingPage, null, true)}/>
             <Route exact path="/login" component={Auth(LoginPage, false)}/>
             <Route exact path="/register" component={Auth(RegisterPage, false)}/>
+            <Route exact path="/product/upload" component={Auth(UploadProductPage, true)}/>
           </Switch>
         </div>
         <Footer />

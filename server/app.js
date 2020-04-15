@@ -5,6 +5,7 @@ const bodyParser = require('body-parser'); // Body 데이터를 분석(parse)해
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var productRouter = require('./routes/product');
 
 var app = express();
 
@@ -19,5 +20,7 @@ app.use(bodyParser.json());
 
 app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
+app.use('/uploads', express.static('uploads')); // 업로드 폴더에 있는 정적자료를 가져오기 위함.
+app.use('/api/product', productRouter);
 
 module.exports = app;

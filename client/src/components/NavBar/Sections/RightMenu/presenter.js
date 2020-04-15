@@ -15,6 +15,9 @@ const RightMenu = (props) => (
         </Menu>
         :
         <Menu mode={props.mode}>
+            <Menu.Item key="upload">
+                <Link to="/product/upload">UPLOAD</Link>
+            </Menu.Item>
             <Menu.Item key="logout">
                 <a onClick={props.logoutHandler}>Logout</a>
             </Menu.Item>
