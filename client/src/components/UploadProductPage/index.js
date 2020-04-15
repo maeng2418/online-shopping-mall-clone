@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Button, Input, Select } from 'antd';
+import { Form, Button, Input, Select, InputNumber } from 'antd';
 import FileUpload from 'components/Common/FileUpload';
 import Axios from 'axios';
 import { useSelector } from 'react-redux';
@@ -22,7 +22,7 @@ const UploadProductPage = (props) => {
 
   const onSubmit = (body) => {
 
-    if (!body.title || !body.price || !Images || !body.continents) {
+    if (!body.title || !body.price || !Images || !body.continent) {
       return alert('fill all the fileds first!');
     }
     
@@ -30,8 +30,8 @@ const UploadProductPage = (props) => {
       writer: user.userData._id,
       title: body.title,
       price: body.price,
-      image: Images,
-      continents: body.continents
+      images: Images,
+      continent: body.continent
     }
 
     Axios.post('/api/product/uploadProduct', variables)
@@ -69,10 +69,10 @@ const UploadProductPage = (props) => {
         </Form.Item>
 
         <Form.Item name="price" required label="Price($)" labelAlign="left" hasFeedback>
-          <Input
+          <InputNumber
             id="price"
             placeholder="Enter Price"
-            type="number"
+            style={{width:'100%'}}
           />
         </Form.Item>
 
