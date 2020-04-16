@@ -22,7 +22,7 @@ let storage = multer.diskStorage({
 
 const upload = multer({ storage: storage }).single("file"); // 파일 하나만
 
-router.post('/uploadImage', function(req, res) {
+router.post('/uploadImage', function (req, res) {
     //이미지를 서버에 저장
     upload(req, res, err => {
         if (err) {
@@ -32,18 +32,18 @@ router.post('/uploadImage', function(req, res) {
     })
 });
 
-router.post('/uploadProduct', function(req, res) {
+router.post('/uploadProduct', function (req, res) {
 
     // save all the data we got from the client into the database
     const product = new Product(req.body);
 
     product.save(err => {
-        if(err) return res.status(400).json({success: false});
-        return res.status(200).json({success: true});
+        if (err) return res.status(400).json({ success: false });
+        return res.status(200).json({ success: true });
     })
 });
 
-router.post('/getProducts', function(req, res) {
+router.post('/getProducts', function (req, res) {
 
     let order = req.body.order ? req.body.order : "desc";
     let sortBy = req.body.sortBy ? req.body.sortBy : "_id";
@@ -52,9 +52,11 @@ router.post('/getProducts', function(req, res) {
 
     let findArgs = {};
 
+    let term = req.body.searchTerm;
+
     for (let key in req.body.filters) {
-        if(req.body.filters[key].length > 0) {
-            if(key ==='price') {
+        if (req.body.filters[key].length > 0) {
+            if (key === 'price') {
                 findArgs[key] = {
                     $gte: req.body.filters[key][0], // ~보다 크거나 같다 (몽고디비 인식)
                     $lte: req.body.filters[key][1] // ~보다 작거나 같다 (몽고디비 인식)
@@ -65,15 +67,30 @@ router.post('/getProducts', function(req, res) {
         }
     }
 
-    Product.find(findArgs)
-    .populate('writer')
-    .sort([[sortBy, order]])
-    .skip(skip)
-    .limit(limit)
-    .exec((err, products) => {
-        if(err) return res.stauts(400).json({success: false, err});
-        res.status(200).json({success: true, products, postSize: products.length}); // postSize : loadMore 버튼을 위함.
-    })
+    if (term) {
+        Product.find(findArgs)
+            .find({$text:{$search: term}}) // 몽고디비
+            .populate('writer')
+            .sort([[sortBy, order]])
+            .skip(skip)
+            .limit(limit)
+            .exec((err, products) => {
+                if (err) return res.stauts(400).json({ success: false, err });
+                res.status(200).json({ success: true, products, postSize: products.length }); // postSize : loadMore 버튼을 위함.
+            })
+
+    } else {
+        Product.find(findArgs)
+            .populate('writer')
+            .sort([[sortBy, order]])
+            .skip(skip)
+            .limit(limit)
+            .exec((err, products) => {
+                if (err) return res.stauts(400).json({ success: false, err });
+                res.status(200).json({ success: true, products, postSize: products.length }); // postSize : loadMore 버튼을 위함.
+            })
+    }
+
 
 });
 
