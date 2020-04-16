@@ -1,37 +1,6 @@
 import React, { useState } from 'react';
 import { Checkbox, Collapse } from 'antd';
 
-const continents = [
-    {
-        "_id" : 1,
-        "name" : "Africa"
-    },
-    {
-        "_id" : 2,
-        "name" : "Europe"
-    },
-    {
-        "_id" : 3,
-        "name" : "Asia"
-    },
-    {
-        "_id" : 4,
-        "name" : "North America"
-    },
-    {
-        "_id" : 5,
-        "name" : "South America"
-    },
-    {
-        "_id" : 6,
-        "name" : "Australia"
-    },
-    {
-        "_id" : 7,
-        "name" : "Antarctica"
-    },
-];
-
 const CheckBox = (props) => {
 
     const [Checked, setChecked] = useState([]);
@@ -54,7 +23,7 @@ const CheckBox = (props) => {
     <div>
       <Collapse defaultActiveKey={['0']}>
           <Collapse.Panel header="Continents" key="1">
-            {continents.map((value, index) => (
+            {props.list.map((value, index) => (
                 <React.Fragment key={index}>
                     <Checkbox
                         onChange={() => handleToggle(value._id)}

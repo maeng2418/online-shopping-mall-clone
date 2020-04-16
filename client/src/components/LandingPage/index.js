@@ -5,6 +5,8 @@ import { Button, Row, Col, Card } from 'antd';
 import Meta from 'antd/lib/card/Meta';
 import ImageSlider from 'components/Common/ImageSlider'
 import CheckBox from './Sections/CheckBox';
+import RadioBox from './Sections/RadioBox';
+import { continents, price } from './Sections/Datas';
 
 function LandingPage(props) {
 
@@ -84,18 +86,32 @@ function LandingPage(props) {
     setSkip(0);
   }
 
+  const handlePrice = (value) => {
+    const data = price;
+    let array = [];
+    for (let key in data) {
+      if(data[key]._id === parseInt(value, 10)){ // value를 10진법으로 처리
+        array = data[key].array;
+      }
+    }
+    
+    return array;
+  }
+
   const handleFilters = (filters, category) => { // 필터는 선택된 항목들  &  카테고리는 '가격필터'인지 '국가필터'인지
 
-    console.log(filters)
-    const newFilters = { ...Filters }
+    const newFilters = { ...Filters } // 기존 필터
 
-    newFilters[category] = filters
+    newFilters[category] = filters // 새로운 필터 적용 (continents)
+
+    // continents의 경우 Array형태로, price의 경우 id값만 전달하고 있는 상태
 
     if (category == "price") {
-
+      let priceValues = handlePrice(filters); // id값만 받은걸로 필터 객체 찾아서 넣어줌.
+      newFilters[category] = priceValues // 새로운 필터 적용 (price)
     }
 
-    showFilteredResults(newFilters); // 필터적용
+    showFilteredResults(newFilters); // 필터적용해서 나타내기
     setFilters(newFilters); // 필터 업데이트
 
   }
@@ -108,7 +124,14 @@ function LandingPage(props) {
 
       {/* Filter */}
 
-      <CheckBox handleFilters={(filters) => handleFilters(filters, "continents")} />  {/* 국가필터 설정 */}
+      <Row gutter={[16, 16]}>
+        <Col lg={12} xs={24}>
+          <CheckBox list={continents} handleFilters={(filters) => handleFilters(filters, "continents")} />  {/* 국가필터 설정 */}
+        </Col>
+        <Col lg={12} xs={24}>
+          <RadioBox list={price} handleFilters={(filters) => handleFilters(filters, "price")} />  {/* 가격필터 설정 */}
+        </Col>
+      </Row>
 
       {/* Search */}
 
