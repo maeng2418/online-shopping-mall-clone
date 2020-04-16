@@ -79,7 +79,7 @@ const UploadProductPage = (props) => {
         <Form.Item name="continent" required label="Continent" labelAlign="left" hasFeedback>
           <Select>
             {Continents.map(item=>
-              <Select.Option key={item.key} value={item.value}>{item.value}</Select.Option>
+              <Select.Option key={item.key} value={item.key}>{item.value}</Select.Option>
             )}
           </Select>
         </Form.Item>
