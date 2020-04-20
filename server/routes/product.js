@@ -94,4 +94,25 @@ router.post('/getProducts', function (req, res) {
 
 });
 
+//?id=${productId}&type=single
+//id=123123123,123123123123,123123123    type=array
+router.get('/products_by_id', function (req, res) {
+
+    let type = req.query.type;
+    let productIds = req.query.id;
+
+    if(type === "array") {
+
+    }
+
+    //we need to find the product information that belong to product Id
+    Product.find({'_id' : {$in: productIds}}) // in은 배열 집어넣을 수 있음.
+    .populate('writer')
+    .exec((err, product) => {
+        if(err) return res.status(400).send(err);
+        return res.status(200).send(product); // send: 배열형식으로 보냄
+    })
+
+});
+
 module.exports = router;

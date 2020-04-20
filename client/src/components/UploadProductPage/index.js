@@ -31,7 +31,8 @@ const UploadProductPage = (props) => {
       title: body.title,
       price: body.price,
       images: Images,
-      continent: body.continent
+      continent: body.continent,
+      description: body.description
     }
 
     Axios.post('/api/product/uploadProduct', variables)

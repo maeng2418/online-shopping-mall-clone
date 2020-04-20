@@ -8,6 +8,7 @@ import CheckBox from './Sections/CheckBox';
 import RadioBox from './Sections/RadioBox';
 import { continents, price } from './Sections/Datas';
 import SearchFeature from './Sections/SearchFeature';
+import { withRouter, Link } from 'react-router-dom';
 
 function LandingPage(props) {
 
@@ -52,7 +53,7 @@ function LandingPage(props) {
     <Col lg={6} md={8} xs={24} key={index}>
       <Card
         hoverable={true}
-        cover={<ImageSlider images={product.images} />}
+        cover={<Link to={`/product/${product._id}`}><ImageSlider images={product.images}/></Link>}
       >
         <Meta
           title={product.title}
@@ -178,4 +179,4 @@ function LandingPage(props) {
   )
 }
 
-export default LandingPage;
+export default withRouter(LandingPage);
