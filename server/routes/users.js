@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const config = require('../config/key'); // mongoURI 가져오기
 const { User } = require('../models/User'); // 유저모델 가져오기
 const { auth } = require('../middleware/auth'); // auth 미들웨어 가져오기
+const { Product } = require('../models/Product');
 
 mongoose.connect(config.mongoURI, {
   useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false // 오류 막기 위함
@@ -67,7 +68,9 @@ router.get('/auth', auth, (req, res) => { // auth라는 미들웨어 추가. 엔
       name: req.user.name,
       lastname: req.user.lastname,
       role: req.user.role,
-      image: req.user.image
+      image: req.user.image,
+      cart: req.user.cart,
+      history: req.user.history
   });
 });
 
@@ -125,5 +128,40 @@ router.get('/addToCart', auth, (req, res) => {
         }
     })
 });
+
+router.get('/removeFromCart', auth, (req, res) => {
+    
+    User.findOneAndUpdate({_id: req.user._id}, {"$pull": {"cart": {"id": req.query._id}}}, {new: true}, (err, userInfo) => {
+        let cart = userInfo.cart;
+        let array = cart.map(item => {
+            return item.id
+        })
+
+        Product.find({'_id' : { $in: array }})
+        .populate('writer')
+        .exec((err, cartDetail) => {
+            return res.status(200).json({
+                cartDetail,
+                cart
+            })
+        })
+    })
+});
+
+router.get('/userCartInfo', auth, (req, res) => {
+    User.findOne({_id: req.user._id}, (err, userInfo) => {
+        let cart = userInfo.cart;
+        let array = cart.map(item => {
+            return item.id
+        })
+
+        Product.find({'_id': {$in: array}})
+        .populate('writer')
+        .exec((err, cartDetail) => {
+            if (err) return res.status(400).send(err);
+            res.status(200).json({success:true, cartDetail, cart}); 
+        })
+    })
+})
 
 module.exports = router;

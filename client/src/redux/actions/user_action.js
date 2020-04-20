@@ -6,6 +6,8 @@ import {
     LOGOUT_USER,
     AUTH_USER,
     ADD_TO_CART_USER,
+    GET_CART_ITEMS_USER,
+    REMOVE_CART_ITEM_USER,
 } from './types';
 
 const loginUser = (dataTosubmit) => {
@@ -61,6 +63,49 @@ const addToCart = (_id) => {
         payload: request
     }
 }
+
+
+export function getCartItems(cartItems, userCart) {
+    const request = axios.get(`/api/product/products_by_id?id=${cartItems}&type=array`) // type이 여러 개
+        .then(response => {
+
+        // Make CartDetail inside Redux Store
+        // We need to add quantity data to Product Information that come from Product Collection.
+
+        userCart.forEach(cartItem => {
+            response.data.forEach((productDetail, i) => {
+                if(cartItem.id === productDetail._id) {
+                    response.data[i].quantity = cartItem.quantity;
+                }
+            })
+        })
+        return response.data;
+    });
+
+    return {
+        type: GET_CART_ITEMS_USER, 
+        payload: request
+    }
+}
+
+export function removeFromCartItem(id) {
+    const request = axios.get(`/api/users/removeFromCart?_id=${id}`)
+    .then(response => {
+        response.data.cart.forEach(item => {
+            response.data.cartDetail.forEach((k, i) => {
+                if (item.id === k._id) {
+                    response.data.cartDetail[i].quantity = item.quantity
+                }
+            })
+        })
+        return response.data;
+    });
+
+    return {
+        type: REMOVE_CART_ITEM_USER,
+        payload: request
+    }
+};
 
 const userActionCreators = {
     loginUser,
