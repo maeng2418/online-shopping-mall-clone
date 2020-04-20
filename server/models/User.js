@@ -28,6 +28,14 @@ const userSchema = mongoose.Schema({
         default: 0
     },
     image: String,
+    cart : {
+        type: Array,
+        default: []
+    },
+    history: {
+        type: Array,
+        default: []
+    },
     // 유효성 관리
     token: {
         type: String

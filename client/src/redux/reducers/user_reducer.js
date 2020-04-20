@@ -1,5 +1,5 @@
 import {
-    LOGIN_USER, REGISTER_USER, LOGOUT_USER, AUTH_USER
+    LOGIN_USER, REGISTER_USER, LOGOUT_USER, AUTH_USER, ADD_TO_CART_USER
 } from 'redux/actions/types';
 
 export default function (state={}, action) {
@@ -15,6 +15,9 @@ export default function (state={}, action) {
         
         case AUTH_USER:
             return { ...state, userData: action.payload }
+
+        case ADD_TO_CART_USER:
+            return { ...state, userData: { ...state.userData, cart: action.payload } }
 
         default:
             return state;

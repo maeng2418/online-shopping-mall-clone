@@ -11,6 +11,10 @@ const ProductInfo = (props) => {
 
     }, [props.detail]);
 
+    const addToCartHandler = () => {
+        props.addToCart(props.detail._id);
+    }
+
     return (
         <div>
             <Descriptions title="Product Info">
@@ -23,7 +27,7 @@ const ProductInfo = (props) => {
             <br />
             <br />
             <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <Button size="large" shape="round" type="danger" onClick>
+                <Button size="large" shape="round" type="danger" onClick={addToCartHandler}>
                     Add to Cart
             </Button>
             </div>

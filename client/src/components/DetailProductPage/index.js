@@ -4,9 +4,12 @@ import { Row, Col } from 'antd';
 import ProductImage from './Sections/ProductImage';
 import ProductInfo from './Sections/ProductInfo';
 import { withRouter } from 'react-router-dom';
+import userActionCreators from 'redux/actions/user_action';
+import { useDispatch } from 'react-redux';
 
 const DetailProductPage = (props) => {
 
+    const dispatch = useDispatch();
     const productId = props.match.params.productId;
     const [Product, setProduct] = useState([]);
 
@@ -18,6 +21,11 @@ const DetailProductPage = (props) => {
 
 
     }, []);
+
+    const addToCartHandler = (productId) => {
+        dispatch(userActionCreators.addToCart(productId))
+    };
+
     return (
         <div className="postPage" style={{ width: '100%', padding: '3rem 4rem' }}>
 
@@ -30,7 +38,7 @@ const DetailProductPage = (props) => {
                     <ProductImage detail={Product}/>
                 </Col>
                 <Col lg={12} xs={24}>
-                    <ProductInfo detail={Product}/>
+                    <ProductInfo detail={Product} addToCart={addToCartHandler}/>
                 </Col>
             </Row>
 

@@ -5,6 +5,7 @@ import {
     REGISTER_USER,
     LOGOUT_USER,
     AUTH_USER,
+    ADD_TO_CART_USER,
 } from './types';
 
 const loginUser = (dataTosubmit) => {
@@ -51,11 +52,22 @@ const auth = () => {
     }
 }
 
+const addToCart = (_id) => {
+    const request = axios.get(`${USER_SERVER}/addToCart?productId=${_id}`)
+        .then(response => response.data);
+
+    return {
+        type: ADD_TO_CART_USER,
+        payload: request
+    }
+}
+
 const userActionCreators = {
     loginUser,
     registerUser,
     logout,
     auth,
+    addToCart
 };
 
 export default userActionCreators;
