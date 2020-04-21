@@ -5,6 +5,9 @@ const config = require('../config/key'); // mongoURI 가져오기
 const { User } = require('../models/User'); // 유저모델 가져오기
 const { auth } = require('../middleware/auth'); // auth 미들웨어 가져오기
 const { Product } = require('../models/Product');
+const { Payment } = require('../models/Payment');
+const async = require('async');
+
 
 mongoose.connect(config.mongoURI, {
   useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false // 오류 막기 위함
@@ -162,6 +165,81 @@ router.get('/userCartInfo', auth, (req, res) => {
             res.status(200).json({success:true, cartDetail, cart}); 
         })
     })
+})
+
+router.post('/successBuy', auth, (req, res) => {
+    let history = [];
+    let transactionData = {};
+
+    //1.Put brief Payment Information inside User Collection 
+    req.body.cartDetail.forEach((item) => {
+        history.push({
+            dateOfPurchase: Date.now(),
+            name: item.title,
+            id: item._id,
+            price: item.price,
+            quantity: item.quantity,
+            paymentId: req.body.paymentData.paymentID
+        })
+    })
+
+    //2.Put Payment Information that come from Paypal into Payment Collection 
+    transactionData.user = {
+        id: req.user._id,
+        name: req.user.name,
+        lastname: req.user.lastname,
+        email: req.user.email
+    }
+
+    transactionData.data = req.body.paymentData;
+    transactionData.product = history
+
+
+    User.findOneAndUpdate(
+        { _id: req.user._id },
+        { $push: { history: history }, $set: { cart: [] } },
+        { new: true },
+        (err, user) => {
+            if (err) return res.json({ success: false, err });
+
+
+            const payment = new Payment(transactionData)
+            payment.save((err, doc) => {
+                if (err) return res.json({ success: false, err });
+
+                //3. Increase the amount of number for the sold information 
+
+                //first We need to know how many product were sold in this transaction for 
+                // each of products
+
+                let products = [];
+                doc.product.forEach(item => {
+                    products.push({ id: item.id, quantity: item.quantity })
+                })
+
+                async.eachSeries(products, (item, callback) => {
+                    Product.update(
+                        { _id: item.id },
+                        {
+                            $inc: {
+                                "sold": item.quantity
+                            }
+                        },
+                        { new: false },
+                        callback
+                    )
+                }, (err) => {
+                    if (err) return res.json({ success: false, err })
+                    res.status(200).json({
+                        success: true,
+                        cart: user.cart,
+                        cartDetail: []
+                    })
+                })
+
+            })
+        }
+    )
 })
 
 module.exports = router;
